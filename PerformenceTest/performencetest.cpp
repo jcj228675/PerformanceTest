@@ -5,6 +5,7 @@
 #include <QFile>
 #include <QTextStream>
 
+static QMutex m_oMutex;
 static long long g_nFrequency = 0;
 
 void getCpuFreqency(long long &v)
@@ -35,7 +36,7 @@ void getCpuFreqency(long long &v)
 	v = dwMHz * 1000000;
 }
 
-PerformenceTest::PerformenceTest(QString sFuncName)
+PerformenceTest::PerformenceTest(const std::wstring &sFuncName)
 : m_sCurFunc(sFuncName), m_bEnd(false)
 {
 	m_nStartTime = __rdtsc();
@@ -50,15 +51,15 @@ PerformenceTest::~PerformenceTest()
 	}
 }
 
-void PerformenceTest::addTime(QString &sFuncName, long long nTime)
+void PerformenceTest::addTime(std::wstring &sFuncName, long long nTime)
 {
 	QMutexLocker oLocker(&m_oMutex);
 	m_mapResult[sFuncName].push_back(nTime);
 }
 
-void PerformenceTest::outputResult(const QString &sFileName, bool bClear)
+void PerformenceTest::outputResult(const std::wstring &sFileName, bool bClear)
 {
-	QFile oFile(sFileName);
+	QFile oFile(QString::fromStdWString(sFileName));
 	oFile.open(QIODevice::ReadWrite | QIODevice::Truncate);
 	QTextStream oStream(&oFile);
 
@@ -73,9 +74,9 @@ void PerformenceTest::outputResult(const QString &sFileName, bool bClear)
 		}
 		double nAverageTime = nTotalTime / nCalledCount;
 
-		QString sResult = ite->first + QString("  called times: %1, average time: %2, total time: %3").
-			arg(nCalledCount).arg(nAverageTime / g_nFrequency * 1000).arg(nTotalTime / g_nFrequency * 1000);
-		oStream << sResult << "\r\n";
+		std::wstring sResult = ite->first + QString("  called times: %1, average time: %2, total time: %3").
+			arg(nCalledCount).arg(nAverageTime / g_nFrequency * 1000).arg(nTotalTime / g_nFrequency * 1000).toStdWString();
+		oStream << QString::fromStdWString(sResult) << "\r\n";
 	}
 	if (bClear)
 	{
@@ -115,6 +116,4 @@ bool PerformenceTest::m_bEnabled = false;
 
 PerformenceTest::Initor PerformenceTest::g_nInitor;
 
-QMutex PerformenceTest::m_oMutex;
-
-std::map<QString, std::vector<long long>> PerformenceTest::m_mapResult;
+std::map<std::wstring, std::vector<long long>> PerformenceTest::m_mapResult;

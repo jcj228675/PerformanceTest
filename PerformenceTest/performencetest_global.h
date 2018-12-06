@@ -1,12 +1,10 @@
 #ifndef PERFORMENCETEST_GLOBAL_H
 #define PERFORMENCETEST_GLOBAL_H
 
-#include <QtCore/qglobal.h>
-
 #ifdef PERFORMENCETEST_LIB
-# define PERFORMENCETEST_EXPORT Q_DECL_EXPORT
+# define PERFORMENCETEST_EXPORT __declspec(dllexport)
 #else
-# define PERFORMENCETEST_EXPORT Q_DECL_IMPORT
+# define PERFORMENCETEST_EXPORT __declspec(dllimport)
 #endif
 
 #endif // PERFORMENCETEST_GLOBAL_H

@@ -6,22 +6,18 @@
 #include <map>
 #include <vector>
 
-#include <QString>
-#include <QMutex>
-#include <QTime>
-
 class PERFORMENCETEST_EXPORT PerformenceTest
 {
 public:
-	PerformenceTest(QString sFunc);
+	PerformenceTest(const std::wstring &sFunc);
 	~PerformenceTest();
-	static void outputResult(const QString &sFileName, bool bClear = false);
+	static void outputResult(const std::wstring &sFileName, bool bClear = false);
 	double elapsed(bool bEnd = false);
 	static bool m_bEnabled;
 	static int m_nTimes;
 
 private:
-	static void addTime(QString &sFuncName, long long nTime);
+	static void addTime(std::wstring &sFuncName, long long nTime);
 	static void initFrequency();
 	class Initor
 	{
@@ -33,13 +29,12 @@ private:
 	};
 	static Initor g_nInitor;
 
-	static std::map<QString, std::vector<long long>> m_mapResult;
-	static QMutex m_oMutex;
+	static std::map<std::wstring, std::vector<long long>> m_mapResult;
 
 	long long end();
 	bool m_bEnd;
 	long long m_nStartTime;
-	QString m_sCurFunc;
+	std::wstring m_sCurFunc;
 };
 
 #endif // PERFORMENCETEST_H
